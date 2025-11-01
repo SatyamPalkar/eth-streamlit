@@ -1,0 +1,21 @@
+conda activate satyam-ml-utils
+# (1) Clean any old/incorrect settings
+poetry config --unset repositories.testpypi 2>/dev/null
+poetry config --unset pypi-token.testpypi 2>/dev/null
+poetry config --unset http-basic.testpypi 2>/dev/null
+
+# (2) Set the TestPyPI repository (upload endpoint uses /legacy/)
+poetry config repositories.testpypi https://test.pypi.org/legacy/
+
+# (3) Add your **TestPyPI** token
+# username must be "__token__" and the token goes as the password
+poetry config http-basic.testpypi __token__ pypi-AgENdGVzdC5weXBpLm9yZwIkZDLkYzcyY2UtZTdjMy00ZWI0LTg5YmItNTk0NmRkZmM2YjA1AAAIQwzMsIjAwNzYzNDC2LTdjNGUtNGUwNS04NDF...
+# (token continues...)
+
+# (4) Build your package
+poetry build
+
+# (5) Publish to TestPyPI
+poetry publish -r testpypi -vvv
+
+poetry run pytest tests/test_all.py -v 

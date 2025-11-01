@@ -1,0 +1,10 @@
+Student Information
+==================
+Name: Satyam Palkar
+Student ID: 25217353
+Group: 25217353
+Course: 36120 - Advanced Machine Learning
+Assignment: AT3 - Data Product with Machine Learning
+University: University of Technology Sydney
+
+Contact: satyam.g.palkar@student.uts.edu.au

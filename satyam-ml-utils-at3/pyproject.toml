@@ -1,0 +1,39 @@
+[tool.poetry]
+name = "satyam-ml-utils"
+version = "0.3.0"
+description = "Custom Package for weather prediction and cryptocurrency analysis"
+authors = ["Satyam Palkar <satyam.g.palkar@student.uts.edu.au>"]
+readme = "README.md"
+
+# ✅ Match your repo structure (with "src" folder)
+packages = [{ include = "satyam_ml_utils", from = "src" }]
+
+[tool.poetry.dependencies]
+python = "^3.11.4"
+pandas = "^2.2.2"
+numpy = "^1.26.0"
+scikit-learn = "^1.5.1"
+scipy = "^1.13.0"
+matplotlib = "^3.8.0"
+seaborn = "^0.13.0"
+xgboost = "^2.1.0"
+lightgbm = "^4.4.0"
+imblearn = "^0.0"
+joblib = "^1.4.2"
+# New dependencies for AT3 crypto functionality
+requests = "^2.31.0"
+fastapi = "^0.111.0"
+uvicorn = "^0.30.1"
+streamlit = "^1.36.0"
+plotly = "^5.15.0"
+hyperopt = "^0.2.7"
+lime = "^0.2.0.1"
+wandb = "^0.17.4"
+jupyterlab = "^4.2.3"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.0"
+
+[build-system]
+requires = ["poetry-core>=2.0.0"]
+build-backend = "poetry.core.masonry.api"

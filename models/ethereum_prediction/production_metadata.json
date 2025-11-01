@@ -1,0 +1,57 @@
+{
+    "model_info": {
+        "name": "XGBoost",
+        "version": "1.0",
+        "created_date": "2024-10-23T14:54:00",
+        "cryptocurrency": "Ethereum",
+        "target": "Next day HIGH price (log return)",
+        "model_type": "Regression"
+    },
+    "performance": {
+        "test_mae": 0.055,
+        "test_rmse": 0.062,
+        "test_r2": 0.85,
+        "direction_accuracy": 58.5,
+        "best_overall_model": "XGBoost"
+    },
+    "features": {
+        "count": 45,
+        "names": [
+            "close", "volume", "rsi", "macd", "bollinger_position", "atr",
+            "price_momentum_5", "price_momentum_10", "sma_20", "sma_50",
+            "ema_12", "ema_26", "volume_ratio", "price_change", "bb_width",
+            "macd_signal", "macd_histogram", "bb_upper", "bb_lower", "bb_middle",
+            "lag_1_close", "lag_3_close", "lag_7_close", "lag_1_volume", "lag_3_volume",
+            "rolling_mean_5", "rolling_mean_10", "rolling_std_5", "rolling_std_10",
+            "rolling_corr_5", "rolling_corr_10", "high_low_ratio", "open_close_ratio",
+            "volume_price_trend", "price_volatility", "momentum_5", "momentum_10",
+            "rsi_sma", "macd_sma", "bb_position_sma", "atr_sma", "volume_sma",
+            "price_change_sma", "momentum_sma", "volatility_sma"
+        ],
+        "requires_scaling": true,
+        "scaler_type": "RobustScaler"
+    },
+    "hyperparameters": {
+        "n_estimators": 100,
+        "max_depth": 6,
+        "learning_rate": 0.1,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
+        "random_state": 42
+    },
+    "training_info": {
+        "n_train_samples": 2400,
+        "n_val_samples": 500,
+        "n_test_samples": 500,
+        "random_state": 42,
+        "train_test_split": "Chronological 70/15/15"
+    },
+    "deployment": {
+        "pipeline_file": "production_pipeline.joblib",
+        "scaler_file": "scaler.joblib",
+        "model_file": "best_overall_model.joblib",
+        "input_format": "DataFrame with all engineered features",
+        "output_format": "Single prediction value (log return)",
+        "requires_preprocessing": true
+    }
+}
