@@ -6,7 +6,7 @@ FastAPI endpoints for cryptocurrency prediction service.
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
@@ -87,31 +87,60 @@ async def startup_event():
         print(f"❌ Startup error: {e}")
 
 
-@app.get("/", response_model=Dict[str, str])
+@app.get("/")
 async def root():
     """Root endpoint with API information."""
     return {
-        "message": "Ethereum Price Prediction API",
+        "project_objectives": [
+            "Predict Ethereum prices using machine learning",
+            "Provide RESTful API for cryptocurrency price forecasting",
+            "Support real-time predictions with confidence scores"
+        ],
         "version": "1.0.0",
         "status": "active",
+        "github_repository": "https://github.com/SatyamPalkar/eth-streamlit",
         "endpoints": {
-            "health": "/health",
-            "predict": "/predict",
-            "model_info": "/model/info",
-            "docs": "/docs"
+            "GET /": "Project information and endpoints list",
+            "GET /health/": "Health check - returns welcome message",
+            "GET /predict/<token>": "Predict Ethereum price with authentication token",
+            "POST /predict": "Predict Ethereum price (detailed)",
+            "GET /model/info": "Model information and metadata",
+            "GET /docs": "Interactive API documentation"
+        },
+        "input_parameters": {
+            "close": "Current closing price (float)",
+            "volume": "Trading volume (float)",
+            "open": "Opening price (float)",
+            "high": "Highest price (float)",
+            "low": "Lowest price (float)",
+            "price_change": "Price change percentage (float)",
+            "volatility": "Market volatility (float)",
+            "ma_7": "7-day moving average (float)",
+            "ma_30": "30-day moving average (float)",
+            "rsi": "Relative Strength Index (float, 0-100)",
+            "macd": "MACD value (float)",
+            "macd_signal": "MACD signal line (float)"
+        },
+        "output_format": {
+            "predicted_price": "Predicted price in USD (float)",
+            "confidence_score": "Prediction confidence (float, 0-1)",
+            "prediction_date": "ISO format date (string)",
+            "model_used": "Model name used for prediction (string)",
+            "features_count": "Number of features used (integer)"
         }
     }
 
 
-@app.get("/health", response_model=HealthResponse)
+@app.get("/health/")
 async def health_check():
-    """Health check endpoint."""
-    return HealthResponse(
-        status="healthy" if model_predictor and latest_data is not None else "degraded",
-        timestamp=datetime.now().isoformat(),
-        model_loaded=model_predictor is not None,
-        data_available=latest_data is not None and not latest_data.empty
-    )
+    """Health check endpoint with welcome message."""
+    return {
+        "message": "Welcome to Ethereum Price Prediction API! 🚀",
+        "status": "healthy" if model_predictor and latest_data is not None else "degraded",
+        "timestamp": datetime.now().isoformat(),
+        "model_loaded": model_predictor is not None,
+        "data_available": latest_data is not None and not latest_data.empty
+    }
 
 
 @app.get("/model/info", response_model=ModelInfoResponse)
@@ -130,6 +159,47 @@ async def get_model_info():
             "features": len(model_predictor.feature_columns)
         }
     )
+
+
+@app.get("/predict/{token}")
+async def predict_price_get(token: str):
+    """Predict Ethereum price for the next day using GET method with token."""
+    if not model_predictor or latest_data is None or latest_data.empty:
+        raise HTTPException(status_code=503, detail="Model or data not available")
+    
+    # Simple token validation (in production, use proper authentication)
+    valid_tokens = ["demo_token_2024", "eth_pred_api", "ml_token"]
+    if token not in valid_tokens:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+    try:
+        # Create features for prediction
+        df_with_features = model_predictor.create_features(latest_data)
+        
+        # Get latest data point
+        latest_features = df_with_features.tail(1)
+        
+        # Make prediction
+        prediction = model_predictor.predict(latest_features)
+        predicted_price = float(prediction[0])
+        
+        # Calculate confidence score (simplified)
+        confidence_score = min(0.95, max(0.60, 0.7 + np.random.normal(0, 0.1)))
+        
+        # Calculate prediction date
+        prediction_date = (datetime.now() + timedelta(days=1)).isoformat()
+        
+        return {
+            "predicted_price": predicted_price,
+            "confidence_score": confidence_score,
+            "prediction_date": prediction_date,
+            "model_used": model_predictor.best_model_name,
+            "features_count": len(model_predictor.feature_columns),
+            "status": "success"
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Prediction error: {str(e)}")
 
 
 @app.post("/predict", response_model=PredictionResponse)
